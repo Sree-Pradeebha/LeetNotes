@@ -1,0 +1,21 @@
+.layout {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .main-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .page-content {
+    flex: 1;
+    padding: 24px;
+    background-color: #f8fafc;
+    overflow-y: auto;
+  }
+
+  .editor-page {
+    padding: 0;
+  }

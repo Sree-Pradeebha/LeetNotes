@@ -1,0 +1,306 @@
+.add-note-page {
+    padding: 24px 40px;
+  
+    height: 100%;
+  
+    display: flex;
+    flex-direction: column;
+  
+    gap: 24px;
+  
+    box-sizing: border-box;
+  }
+  
+  /* =========================
+     HEADER
+  ========================= */
+  .question-header {
+    display: flex;
+  
+    align-items: center;
+  
+    gap: 16px;
+  }
+  .question-number {
+    width: 150px;
+  }
+  
+  .question-name {
+    flex: 1;
+  }
+  
+  .question-header input {
+    padding: 12px 14px;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+  
+    font-size: 15px;
+  
+    outline: none;
+  }
+  
+  .question-header input:focus {
+    border-color: #2563eb;
+  }
+  
+  
+  /* =========================
+     STAR BUTTON
+  ========================= */
+  
+  .star-btn {
+    width: 50px;
+    height: 50px;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+  
+    background: white;
+  
+    font-size: 26px;
+  
+    cursor: pointer;
+  
+    transition: 0.2s;
+  }
+  
+  .star-btn:hover {
+    transform: scale(1.05);
+  }
+  
+  .star-btn.active {
+    color: #2563eb;
+    border-color: #2563eb;
+  }
+  
+  /* =========================
+     WORKSPACE
+  ========================= */
+  
+  .workspace {
+    display: flex;
+  
+    align-items: flex-start;
+  
+    gap: 24px;
+  }
+  /* =========================
+     LEFT PANEL
+  ========================= */
+  
+  .metadata-panel {
+    width: 320px;
+  
+    flex-shrink: 0;
+  
+    background: white;
+  
+    border-radius: 14px;
+  
+    padding: 20px;
+  
+    border: 1px solid #e5e7eb;
+  
+    display: flex;
+    flex-direction: column;
+  
+    gap: 24px;
+  }
+  
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .field-group label {
+    font-size: 14px;
+    font-weight: 600;
+  
+    color: #374151;
+  }
+  
+  .field-group textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  
+  .field-group textarea,
+  .field-group select {
+    padding: 12px;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+  
+    font-size: 14px;
+  
+    outline: none;
+  }
+  
+  .field-group textarea:focus,
+  .field-group select:focus {
+    border-color: #2563eb;
+  }
+  
+  /* =========================
+     TOPIC CHIPS
+  ========================= */
+  
+  .topics-container {
+    display: flex;
+    flex-wrap: wrap;
+  
+    gap: 8px;
+  }
+  
+  .topic-chip {
+    border: 1px solid #d1d5db;
+  
+    background: white;
+  
+    padding: 8px 12px;
+  
+    border-radius: 999px;
+  
+    cursor: pointer;
+  
+    font-size: 13px;
+  
+    transition: 0.2s;
+  }
+  
+  .topic-chip:hover {
+    border-color: #2563eb;
+  }
+  
+  .topic-chip.selected {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+  }
+  
+  /* =========================
+     RIGHT PANEL
+  ========================= */
+  
+  .editor-panel {
+    flex: 1;
+  
+    display: flex;
+    flex-direction: column;
+  
+    gap: 24px;
+  }
+
+  /* =========================
+     SOLUTION CARD
+  ========================= */
+  
+  .solution-card {
+    background: white;
+  
+    border-radius: 14px;
+  
+    border: 1px solid #e5e7eb;
+  
+    padding: 20px;
+  
+    display: flex;
+    flex-direction: column;
+  
+    gap: 18px;
+  }
+  
+  .card-header {
+    display: flex;
+  
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .card-header h3 {
+    color: #111827;
+  }
+  
+  .complexities {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .complexities select {
+    padding: 10px 12px;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+  
+    outline: none;
+  }
+  
+  .solution-editor {
+    min-height: 220px;
+  
+    resize: vertical;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+  
+    padding: 14px;
+  
+    font-size: 14px;
+  
+    outline: none;
+  }
+  
+  .solution-editor:focus {
+    border-color: #2563eb;
+  }
+
+  .question-number::-webkit-outer-spin-button,
+  .question-number::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  }
+
+  .question-number {
+    appearance: textfield;
+  }
+
+  .custom-topic-input {
+    width: 100%;
+    margin-top: 12px;
+  
+    padding: 10px 12px;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+  }
+  
+  .complexity-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .complexity-field label {
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .complexity-field input {
+    padding: 8px 10px;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+  }
+
+  .custom-complexity {
+    display: flex;
+    gap: 8px;
+  }
+
+  .add-note-page {
+    padding: 24px 40px;
+    height: 100%;
+    box-sizing: border-box;
+  }
