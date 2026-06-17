@@ -6,6 +6,8 @@ import { TOPICS, DIFFICULTIES } from "../data/options";
 import SolutionCard from "../components/SolutionCard";
 
 function AddNote() {
+const [title, setTitle] = useState("");
+const [description, setDescription] = useState("");
 const [isStarred, setIsStarred] = useState(false);
 
 const [difficulty, setDifficulty] = useState("");
@@ -29,13 +31,47 @@ customSC: "",
 solution: "",
 });
 
+const [topicSearch, setTopicSearch] = useState("");
+
 const toggleTopic = (topic) => {
-setSelectedTopics((prev) =>
-prev.includes(topic)
-? prev.filter((t) => t !== topic)
-: [...prev, topic]
+    setSelectedTopics((prev) =>
+      prev.includes(topic)
+        ? prev.filter((t) => t !== topic)
+        : [...prev, topic]
+    );
+  };
+
+const filteredTopics = TOPICS.filter(
+  (topic) =>
+    topic.toLowerCase().includes(topicSearch.toLowerCase()) &&
+    !selectedTopics.includes(topic)
 );
-};
+const handleSave = () => {
+
+    const note = {
+      id: crypto.randomUUID(),
+
+      title,
+      description,
+
+      isStarred,
+
+      difficulty,
+
+      topics: selectedTopics,
+
+      bruteForce,
+
+      optimal,
+
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+
+    console.log(note);
+  };
+
+
 
 return (
     <div className="add-note-page">
@@ -60,6 +96,14 @@ return (
           onClick={() => setIsStarred(!isStarred)}
         >
           {isStarred ? "★" : "☆"}
+        </button>
+
+        <button
+          type="button"
+          className="save-btn"
+          onClick={handleSave}
+        >
+        Save
         </button>
   
       </div>
@@ -101,43 +145,58 @@ return (
             </select>
           </div>
   
-          <div className="field-group">
-  
-            <label>Topics</label>
-  
-            {selectedTopics.includes("Other") && (
-              <input
-                type="text"
-                placeholder="Enter custom topic"
-                value={customTopic}
-                onChange={(e) =>
-                  setCustomTopic(e.target.value)
-                }
-                className="custom-topic-input"
-              />
-            )}
-  
-            <div className="topics-container">
-  
-              {TOPICS.map((topic) => (
-                <button
-                  key={topic}
-                  type="button"
-                  className={`topic-chip ${
-                    selectedTopics.includes(topic)
-                      ? "selected"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    toggleTopic(topic)
-                  }
+          <div className="field-group topics-section">
+
+          <label htmlFor="topic-search">
+            Topics
+            </label>
+
+            <div className="selected-topics">
+            {selectedTopics.map((topic) => (
+                <div
+                key={topic}
+                className="selected-topic-chip"
                 >
-                  {topic}
+                <span>{topic}</span>
+
+                <button
+                    type="button"
+                    onClick={() => toggleTopic(topic)}
+                >
+                    ×
                 </button>
-              ))}
-  
+                </div>
+            ))}
             </div>
-  
+
+            <input
+            id="topic-search"
+            name="topicSearch"
+            type="text"
+            placeholder="Search topic..."
+            value={topicSearch}
+            onChange={(e) => setTopicSearch(e.target.value)}
+            className="topic-search"
+            />
+
+            {topicSearch && filteredTopics.length > 0 && (
+            <div className="topic-dropdown">
+                {filteredTopics.map((topic) => (
+                <button
+                    key={topic}
+                    type="button"
+                    className="topic-option"
+                    onClick={() => {
+                    toggleTopic(topic);
+                    setTopicSearch("");
+                    }}
+                >
+                    {topic}
+                </button>
+                ))}
+            </div>
+            )}
+
           </div>
   
         </div>
