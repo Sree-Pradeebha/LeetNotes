@@ -7,6 +7,10 @@ import SolutionCard from "../components/SolutionCard";
 
 function AddNote() {
 const [title, setTitle] = useState("");
+
+const [questionNumber, setQuestionNumber] = useState("");
+const [questionName, setQuestionName] = useState("");
+
 const [description, setDescription] = useState("");
 const [isStarred, setIsStarred] = useState(false);
 
@@ -48,27 +52,54 @@ const filteredTopics = TOPICS.filter(
 );
 const handleSave = () => {
 
+    const existingNotes =
+        JSON.parse(localStorage.getItem("notes")) || [];
+    
+    const duplicateNote = existingNotes.find(
+        (note) => note.questionNumber === questionNumber
+    );
+    
+    if (duplicateNote) {
+        alert(
+        `Question #${questionNumber} already exists!`
+        );
+        return;
+    }
+    
     const note = {
-      id: crypto.randomUUID(),
-
-      title,
-      description,
-
-      isStarred,
-
-      difficulty,
-
-      topics: selectedTopics,
-
-      bruteForce,
-
-      optimal,
-
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+        id: crypto.randomUUID(),
+    
+        questionNumber,
+        questionName,
+        description,
+    
+        isStarred,
+    
+        difficulty,
+    
+        topics: selectedTopics,
+    
+        bruteForce,
+        optimal,
+        status:
+        bruteForce.solution.trim() &&
+        optimal.solution.trim()
+            ? "complete"
+            : "incomplete",
+    
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
     };
-
-    console.log(note);
+    
+    existingNotes.push(note);
+    
+    localStorage.setItem(
+        "notes",
+        JSON.stringify(existingNotes)
+    );
+    
+    alert("Note saved successfully!");
+        
   };
 
 
@@ -78,16 +109,24 @@ return (
   
       <div className="question-header">
   
-        <input
-          type="number"
-          placeholder="Question Number"
-          className="question-number"
+      <input
+        type="number"
+        placeholder="Question Number"
+        className="question-number"
+        value={questionNumber}
+        onChange={(e) =>
+            setQuestionNumber(e.target.value)
+        }
         />
   
         <input
           type="text"
           placeholder="Question Name"
           className="question-name"
+          value={questionName}
+          onChange={(e) =>
+          setQuestionName(e.target.value)
+          }
         />
   
         <button
@@ -116,8 +155,12 @@ return (
             <label>Description</label>
   
             <textarea
-              placeholder="Write a short description..."
-              spellCheck={false}
+            placeholder="Write a short description..."
+            spellCheck={false}
+            value={description}
+            onChange={(e) =>
+                setDescription(e.target.value)
+            }
             />
           </div>
   
