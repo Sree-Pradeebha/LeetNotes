@@ -15,8 +15,18 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/notes" element={<Notes />} />
-          <Route path="/add-note" element={<AddNote />} />
-          <Route path="/note/:id" element={<NoteDetail />} />
+          <Route
+          path="/add-note"
+          element={<AddNote />}
+          />
+          <Route
+          path="/edit-note/:questionNumber"
+          element={<AddNote />}
+          />
+          <Route
+          path="/notes/:questionNumber"
+          element={<NoteDetail />}
+          />
           <Route path="/revision" element={<Revision />} />
         </Routes>
       </MainLayout>

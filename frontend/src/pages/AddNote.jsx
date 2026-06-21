@@ -1,9 +1,9 @@
 import { useState } from "react";
 import "./AddNote.css";
-
 import { TOPICS, DIFFICULTIES } from "../data/options";
-
 import SolutionCard from "../components/SolutionCard";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 function AddNote() {
 const [title, setTitle] = useState("");
@@ -15,10 +15,12 @@ const [description, setDescription] = useState("");
 const [isStarred, setIsStarred] = useState(false);
 
 const [difficulty, setDifficulty] = useState("");
+const [status, setStatus] = useState("incomplete");
 
 const [selectedTopics, setSelectedTopics] = useState([]);
 const [customTopic, setCustomTopic] = useState("");
-
+const { questionNumber: routeQuestionNumber } =
+  useParams();
 const [bruteForce, setBruteForce] = useState({
 tc: "",
 sc: "",
@@ -54,20 +56,14 @@ const handleSave = () => {
 
     const existingNotes =
         JSON.parse(localStorage.getItem("notes")) || [];
-    
-    const duplicateNote = existingNotes.find(
-        (note) => note.questionNumber === questionNumber
-    );
-    
-    if (duplicateNote) {
-        alert(
-        `Question #${questionNumber} already exists!`
+
+    const existingNote = existingNotes.find(
+        (note) =>
+            note.questionNumber === routeQuestionNumber
         );
-        return;
-    }
-    
+
     const note = {
-        id: crypto.randomUUID(),
+        id: existingNote?.id || crypto.randomUUID(),
     
         questionNumber,
         questionName,
@@ -81,27 +77,94 @@ const handleSave = () => {
     
         bruteForce,
         optimal,
-        status:
-        bruteForce.solution.trim() &&
-        optimal.solution.trim()
-            ? "complete"
-            : "incomplete",
+        status,
     
-        createdAt: Date.now(),
+        createdAt:
+        existingNote?.createdAt || Date.now(),
         updatedAt: Date.now(),
     };
     
-    existingNotes.push(note);
-    
-    localStorage.setItem(
-        "notes",
-        JSON.stringify(existingNotes)
+    const duplicateNote = existingNotes.find(
+        (note) => note.questionNumber === questionNumber
     );
     
-    alert("Note saved successfully!");
-        
-  };
+    
+    if (!routeQuestionNumber) {
 
+        const duplicateNote = existingNotes.find(
+          (note) => note.questionNumber === questionNumber
+        );
+      
+        if (duplicateNote) {
+          alert(
+            `Question #${questionNumber} already exists!`
+          );
+          return;
+        }
+      
+      }
+    
+    if (routeQuestionNumber) {
+
+        const updatedNotes = existingNotes.map(
+          (existing) =>
+            existing.questionNumber === routeQuestionNumber
+              ? note
+              : existing
+        );
+      
+        localStorage.setItem(
+          "notes",
+          JSON.stringify(updatedNotes)
+        );
+      
+      } else {
+      
+        existingNotes.push(note);
+      
+        localStorage.setItem(
+          "notes",
+          JSON.stringify(existingNotes)
+        );
+      
+      }
+      alert(
+        routeQuestionNumber
+          ? "Note updated successfully!"
+          : "Note saved successfully!"
+      );
+    }
+  useEffect(() => {
+
+    if (!routeQuestionNumber) return;
+  
+    const notes =
+      JSON.parse(localStorage.getItem("notes")) || [];
+  
+    const note = notes.find(
+      (note) =>
+        note.questionNumber === routeQuestionNumber
+    );
+  
+    if (!note) return;
+  
+    setQuestionNumber(note.questionNumber);
+    setQuestionName(note.questionName);
+  
+    setDescription(note.description);
+  
+    setIsStarred(note.isStarred);
+  
+    setDifficulty(note.difficulty);
+  
+    setSelectedTopics(note.topics);
+  
+    setBruteForce(note.bruteForce);
+  
+    setOptimal(note.optimal);
+    setStatus(note.status);
+  
+  }, [routeQuestionNumber]);
 
 
 return (
@@ -187,6 +250,28 @@ return (
               ))}
             </select>
           </div>
+
+          <div className="field-group">
+
+            <label>Status</label>
+
+            <select
+                value={status}
+                onChange={(e) =>
+                setStatus(e.target.value)
+                }
+            >
+                <option value="incomplete">
+                Incomplete
+                </option>
+
+                <option value="complete">
+                Complete
+                </option>
+
+            </select>
+
+            </div>
   
           <div className="field-group topics-section">
 
