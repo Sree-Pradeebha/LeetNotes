@@ -1,127 +1,209 @@
 import { useState, useEffect } from "react";
 import "./Notes.css";
 import NoteRow from "../components/NoteRow";
+import { FiFilter } from "react-icons/fi";
+
 
 
 function Notes() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [difficultyFilter, setDifficultyFilter] = useState("All");
+  const [difficultyFilter, setDifficultyFilter] = useState("all");
   const [showStarredOnly, setShowStarredOnly] = useState(false);
-  const [sortBy, setSortBy] = useState("recentlyUpdated");
+  const [sortBy, setSortBy] = useState("questionNumber");
+  const [showFilters, setShowFilters] = useState(false);
+  const [topicFilter, setTopicFilter] = useState("all"); 
   const notes =
     JSON.parse(localStorage.getItem("notes")) || [];
 
-    const filteredNotes = notes.filter((note) => {
+    const allTopics = [
+        ...new Set(
+          notes.flatMap(
+            (note) => note.topics
+          )
+        ),
+      ];
 
-        const matchesSearch =
-          note.questionName
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
+    const filteredNotes = notes.filter(
+        (note) => {
       
-          note.questionNumber
-            .toString()
-            .includes(searchTerm);
+          const matchesSearch =
+            note.questionName
+              .toLowerCase()
+              .includes(
+                searchTerm.toLowerCase()
+              );
       
-        const matchesDifficulty =
-          difficultyFilter === "All" ||
-          note.difficulty === difficultyFilter;
+          const matchesDifficulty =
+            difficultyFilter === "all" ||
+            note.difficulty ===
+              difficultyFilter;
+      
+          const matchesTopic =
+            topicFilter === "all" ||
+            note.topics.includes(
+              topicFilter
+            );
       
           const matchesStarred =
-          !showStarredOnly ||
-          note.isStarred;
-        
-        return (
-          matchesSearch &&
-          matchesDifficulty &&
-          matchesStarred
-        );
-      });
-
-    const sortedNotes = [...filteredNotes].sort(
-    (a, b) => {
-    
-        if (sortBy === "recentlyAdded") {
-        return b.createdAt - a.createdAt;
+            !showStarredOnly ||
+            note.isStarred;
+      
+          return (
+            matchesSearch &&
+            matchesDifficulty &&
+            matchesTopic &&
+            matchesStarred
+          );
         }
-    
-        return b.updatedAt - a.updatedAt;
-    }
-    );
+      );
+
+      const sortedNotes = [...filteredNotes].sort(
+        (a, b) => {
+      
+          if (sortBy === "recentlyAdded") {
+            return b.createdAt - a.createdAt;
+          }
+      
+          if (sortBy === "recentlyUpdated") {
+            return b.updatedAt - a.updatedAt;
+          }
+      
+          return Number(a.questionNumber)
+            - Number(b.questionNumber);
+        }
+      );
 
   
 
   return (
     <div className="notes-page">
 
-      <h1>Notes</h1>
+      <h1 className="notes-title">Notes</h1>
+      <div className="search-row">
+        <input
+            type="text"
+            placeholder="Search notes..."
+            value={searchTerm}
+            onChange={(e) =>
+                setSearchTerm(e.target.value)
+            }
+            className="notes-search"
+        />
 
-      <input
-        type="text"
-        placeholder="Search notes..."
-        value={searchTerm}
-        onChange={(e) =>
-            setSearchTerm(e.target.value)
-        }
-        className="notes-search"
-      />
+            <button
+            className="filter-icon-btn"
+            onClick={() =>
+                setShowFilters(!showFilters)
+            }
+            >
+            <FiFilter />
+            </button>
+      </div>
+      <div
+        className={`filters-panel ${
+            showFilters ? "open" : ""
+        }`}
+        >
+            <select
+            value={difficultyFilter}
+            onChange={(e) =>
+                setDifficultyFilter(e.target.value)
+            }
+            >
+            <option value="all">
+                All Difficulties
+            </option>
+
+            <option value="Easy">Easy</option>
+
+            <option value="Medium">Medium</option>
+
+            <option value="Hard">Hard</option>
+            </select>
 
 
-      <div className="difficulty-filters">
+            <select
+            value={topicFilter}
+            onChange={(e) =>
+                setTopicFilter(e.target.value)
+            }
+            >
+            <option value="all">
+                All Topics
+            </option>
 
-      {["All", "Easy", "Medium", "Hard"].map(
-      (level) => (
-          <button
-          key={level}
-          className={
-              difficultyFilter === level
-              ? "filter-btn active"
-              : "filter-btn"
-          }
+            {allTopics.map((topic) => (
+                <option
+                key={topic}
+                value={topic}
+                >
+                {topic}
+                </option>
+            ))}
+            </select>
 
-          onClick={() =>
-              setDifficultyFilter(level)
-          }
-          >
-          {level}
-          </button>
-      )
-      )}
+            <div className="filter-group">
 
-          <button
-          className={
-              showStarredOnly
-              ? "filter-btn active"
-              : "filter-btn"
-          }
+            <select
+                value={sortBy}
+                onChange={(e) =>
+                    setSortBy(e.target.value)
+                }
+                >
 
-          onClick={() =>
-              setShowStarredOnly(
-              !showStarredOnly
-              )
-          }
-          >
-          ★ Starred
-          </button>
+                <option value="questionNumber">
+                    Question Number
+                </option>
 
+                <option value="recentlyUpdated">
+                    Recently Updated
+                </option>
+
+                <option value="recentlyAdded">
+                    Recently Added
+                </option>
+
+            </select>
+
+            </div>
+
+
+            <label>
+            <input
+                type="checkbox"
+                checked={showStarredOnly}
+                onChange={(e) =>
+                setShowStarredOnly(
+                    e.target.checked
+                )
+                }
+            />
+
+            Starred only
+            </label>
+            {
+            (difficultyFilter !== "all" ||
+            topicFilter !== "all" ||
+            showStarredOnly ||
+            sortBy !== "questionNumber") && (
+
+            <button
+            className="clear-filters-btn"
+            onClick={() => {
+                setDifficultyFilter("all");
+                setTopicFilter("all");
+                setShowStarredOnly(false);
+                setSortBy("questionNumber");
+            }}
+            >
+            Clear Filters
+            </button>
+
+            )}
+        
       </div>
 
-      <select
-        value={sortBy}
-        onChange={(e) =>
-            setSortBy(e.target.value)
-        }
-        className="sort-select"
-        >
 
-        <option value="recentlyUpdated">
-            Recently Updated
-        </option>
-
-        <option value="recentlyAdded">
-            Recently Added
-        </option>
-
-      </select>
 
       <div className="notes-list">
 

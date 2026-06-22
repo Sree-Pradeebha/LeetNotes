@@ -22,6 +22,7 @@ const [customTopic, setCustomTopic] = useState("");
 const { questionNumber: routeQuestionNumber } =
   useParams();
 const [bruteForce, setBruteForce] = useState({
+language: "python",
 tc: "",
 sc: "",
 customTC: "",
@@ -30,6 +31,7 @@ solution: "",
 });
 
 const [optimal, setOptimal] = useState({
+language: "python",
 tc: "",
 sc: "",
 customTC: "",
@@ -88,7 +90,7 @@ const handleSave = () => {
         (note) => note.questionNumber === questionNumber
     );
     
-    
+
     if (!routeQuestionNumber) {
 
         const duplicateNote = existingNotes.find(

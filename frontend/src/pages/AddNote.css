@@ -366,7 +366,7 @@
     border-bottom: 1px solid #f1f5f9;
   }
 
-  .solution-editor {
+  /* .solution-editor {
     width: 100%;
     box-sizing: border-box;
     
@@ -384,7 +384,7 @@
   
     outline: none;
   }
-  
+   */
   .solution-editor:focus {
     border-color: #2563eb;
   }
