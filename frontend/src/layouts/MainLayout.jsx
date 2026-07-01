@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import Sidebar from "../components/Sidebar";
-import TopBar from "../components/TopBar";
+// import TopBar from "../components/TopBar";
 
 import "./MainLayout.css";
 
@@ -31,9 +31,9 @@ function MainLayout({ children }) {
       />
 
       <div className="main-section">
-        {!isAddNotePage && (
+        {/* {!isAddNotePage && (
           <TopBar isSidebarOpen={isSidebarOpen} />
-        )}
+        )} */}
 
         <main
         className={`page-content ${

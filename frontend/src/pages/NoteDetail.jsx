@@ -7,14 +7,14 @@ import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 
 function NoteDetail() {
-const { questionNumber } = useParams();
+const { id } = useParams();
 const navigate = useNavigate();
 
 const notes =
 JSON.parse(localStorage.getItem("notes")) || [];
 
 const note = notes.find(
-(note) => note.questionNumber === questionNumber
+(note) => note.id === id
 );
 
 const handleDelete = () => {
@@ -27,7 +27,7 @@ if (!confirmed) return;
 
 const updatedNotes = notes.filter(
   (note) =>
-    note.questionNumber !== questionNumber
+    note.id !== id
 );
 
 localStorage.setItem(
@@ -86,7 +86,7 @@ return (
 
             <Link
             className="edit-btn"
-            to={`/edit-note/${note.questionNumber}`}
+            to={`/edit-note/${note.id}`}
             >
             Edit
             </Link>

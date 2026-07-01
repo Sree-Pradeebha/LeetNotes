@@ -20,11 +20,11 @@ function App() {
           element={<AddNote />}
           />
           <Route
-          path="/edit-note/:questionNumber"
+          path="/edit-note/:id"
           element={<AddNote />}
           />
           <Route
-          path="/notes/:questionNumber"
+          path="/notes/:id"
           element={<NoteDetail />}
           />
           <Route path="/revision" element={<Revision />} />

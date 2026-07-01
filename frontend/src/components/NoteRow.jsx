@@ -2,10 +2,8 @@ import { Link } from "react-router-dom";
 
 function NoteRow({ note }) {
   return (
-    <Link
-      to={`/notes/${note.questionNumber}`}
-      className="note-row"
-    >
+    <Link to={`/notes/${note.id}`}
+    className="note-row">
       <div className="note-status">
         {note.status === "complete" ? "✓" : "○"}
       </div>

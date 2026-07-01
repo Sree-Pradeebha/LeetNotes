@@ -8,120 +8,125 @@ import { javascript } from "@codemirror/lang-javascript";
 import "./SolutionCard.css";
 
 function SolutionCard({
-title,
-data,
-setData,
-placeholder,
+  title,
+  data,
+  setData,
 }) {
 
-const getLanguageExtension = () => {
+  const getLanguageExtension = () => {
     switch (data.language) {
-        case "cpp":
+      case "cpp":
         return cpp();
-    
-        case "java":
+
+      case "java":
         return java();
-    
-        case "javascript":
+
+      case "javascript":
         return javascript();
-    
-        default:
+
+      default:
         return python();
     }
-    };
+  };
 
-return (
+  return (
 
     <div className="solution-card">
-    
-        <div className="solution-header">
-    
-        <div className="solution-left">
-    
-            <h3>{title}</h3>
-    
+
+      <div className="solution-header">
+
+        <h3>{title}</h3>
+
+        <div className="solution-toolbar">
+
+          <div className="language-field">
+
+            <label>Language</label>
+
             <select
-            className="language-select"
-            value={data.language}
-            onChange={(e) =>
+              className="language-select"
+              value={data.language}
+              onChange={(e) =>
                 setData((prev) => ({
-                ...prev,
-                language: e.target.value,
+                  ...prev,
+                  language: e.target.value,
                 }))
-            }
+              }
             >
-            <option value="python">Python</option>
-            <option value="cpp">C++</option>
-            <option value="java">Java</option>
-            <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="cpp">C++</option>
+              <option value="java">Java</option>
+              <option value="javascript">JavaScript</option>
             </select>
-    
-        </div>
-    
-    
-        <div className="complexities">
-    
+
+          </div>
+
+          <div className="complexities">
+
             <ComplexityField
-            label="TC"
-            value={data.tc}
-            customValue={data.customTC}
-            onChange={(value) =>
+              label="Time Complexity"
+              placeholder="Choose"
+              value={data.tc}
+              customValue={data.customTC}
+              onChange={(value) =>
                 setData((prev) => ({
-                ...prev,
-                tc: value,
+                  ...prev,
+                  tc: value,
                 }))
-            }
-            onCustomChange={(value) =>
+              }
+              onCustomChange={(value) =>
                 setData((prev) => ({
-                ...prev,
-                customTC: value,
+                  ...prev,
+                  customTC: value,
                 }))
-            }
+              }
             />
-    
+
             <ComplexityField
-            label="SC"
-            value={data.sc}
-            customValue={data.customSC}
-            onChange={(value) =>
+              label="Space Complexity"
+              placeholder="Choose"
+              value={data.sc}
+              customValue={data.customSC}
+              onChange={(value) =>
                 setData((prev) => ({
-                ...prev,
-                sc: value,
+                  ...prev,
+                  sc: value,
                 }))
-            }
-            onCustomChange={(value) =>
+              }
+              onCustomChange={(value) =>
                 setData((prev) => ({
-                ...prev,
-                customSC: value,
+                  ...prev,
+                  customSC: value,
                 }))
-            }
+              }
             />
-    
+
+          </div>
+
         </div>
-    
-        </div>
-    
-    
-        <CodeMirror
+
+      </div>
+
+      <CodeMirror
         value={data.solution}
         height="300px"
         extensions={[
-            getLanguageExtension(),
-            autocompletion({
-            activateOnTyping: false
-            })
+          getLanguageExtension(),
+          autocompletion({
+            activateOnTyping: false,
+          }),
         ]}
         onChange={(value) =>
-            setData((prev) => ({
+          setData((prev) => ({
             ...prev,
             solution: value,
-            }))
+          }))
         }
-        />
-    
+      />
+
     </div>
-    
-    );
+
+  );
 }
 
 export default SolutionCard;
