@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./AddNote.css";
 import { TOPICS, DIFFICULTIES } from "../data/options";
 import SolutionCard from "../components/SolutionCard";
 import NoteHeader from "../components/NoteHeader";
 import MetadataBar from "../components/MetadataBar";
-import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {
+  createNote,
+  updateNote,
+  getNote,
+} from "../api/note";
 
 function AddNote() {
 const [title, setTitle] = useState("");
@@ -20,10 +25,12 @@ const [showMetadata, setShowMetadata] = useState(false);
 
 const [difficulty, setDifficulty] = useState("");
 const [status, setStatus] = useState("incomplete");
+const [revisionImportance, setRevisionImportance] = useState("Low");
 
 const [selectedTopics, setSelectedTopics] = useState([]);
 const [customTopic, setCustomTopic] = useState("");
 const { id } = useParams();
+const navigate = useNavigate();
 const [bruteForce, setBruteForce] = useState({
 language: "python",
 tc: "",
@@ -57,132 +64,108 @@ const filteredTopics = TOPICS.filter(
     topic.toLowerCase().includes(topicSearch.toLowerCase()) &&
     !selectedTopics.includes(topic)
 );
-const handleSave = () => {
+const handleSave = async () => {
 
-    const existingNotes =
-        JSON.parse(localStorage.getItem("notes")) || [];
+  if (
+      !questionNumber.trim() ||
+      !questionName.trim()
+  ) {
+      alert("Please enter Question Number and Question Name.");
+      return;
+  }
 
-    const existingNote = existingNotes.find(
-        (note) =>
-            note.id === id
-        );
+  const note = {
 
-    const note = {
-        id: existingNote?.id || crypto.randomUUID(),
-    
-        questionNumber,
-        questionName,
-        description,
-        personalNotes,
-    
-        isStarred,
-    
-        difficulty,
-    
-        topics: selectedTopics,
-    
-        bruteForce,
-        optimal,
-        status,
-    
-        createdAt:
-        existingNote?.createdAt || Date.now(),
-        updatedAt: Date.now(),
-    };
-    
-    const duplicateNote = existingNotes.find(
-        (note) => note.id === id
-    );
-    
-    if (
-        !questionNumber.trim() ||
-        !questionName.trim() ||
-        questionName.trim() === "."
-    ) {
-        alert(
-            "Please enter a valid Question Number and Question Name."
-        );
-    
-        return;
-    }
+      questionNumber,
+      questionName,
 
-    if (!id) {
+      description,
+      personalNotes,
 
-        const duplicateNote = existingNotes.find(
-            (note) =>
-                note.questionNumber === questionNumber
-        );
-        
-        if (duplicateNote) {
-          alert(
-            `Question #${questionNumber} already exists!`
-          );
-          return;
-        }
-      
-      }
-    
-    if (id) {
+      isStarred,
 
-        const updatedNotes = existingNotes.map(
-          (existing) =>
-            existing.id === id
-              ? note
-              : existing
-        );
-      
-        localStorage.setItem(
-          "notes",
-          JSON.stringify(updatedNotes)
-        );
-      
+      difficulty,
+      status,
+      revisionImportance,
+
+      topics: selectedTopics,
+
+      bruteForce,
+      optimal,
+
+  };
+
+  try {
+
+      if (id) {
+
+          await updateNote(id, note);
+
+          alert("Note updated successfully!");
+          navigate("/notes");
+
       } else {
-      
-        existingNotes.push(note);
-      
-        localStorage.setItem(
-          "notes",
-          JSON.stringify(existingNotes)
-        );
-      
-      }
-      alert(
-        id
-          ? "Note updated successfully!"
-          : "Note saved successfully!"
-      );
-    }
-  useEffect(() => {
 
-    if (!id) return;
-  
-    const notes =
-      JSON.parse(localStorage.getItem("notes")) || [];
-  
-    const note = notes.find(
-      (note) =>
-        note.id === id
-    );
-  
-    if (!note) return;
-  
-    setQuestionNumber(note.questionNumber);
-    setQuestionName(note.questionName);
-  
-    setDescription(note.description);
-  
-    setIsStarred(note.isStarred);
-  
-    setDifficulty(note.difficulty);
-  
-    setSelectedTopics(note.topics);
-  
-    setBruteForce(note.bruteForce);
-  
-    setOptimal(note.optimal);
-    setStatus(note.status);
-  
-  }, [id]);
+          await createNote(note);
+
+          alert("Note saved successfully!");
+          navigate("/notes");
+
+      }
+
+  } catch (err) {
+
+      alert(
+          err.response?.data?.message ||
+          "Something went wrong."
+      );
+
+  }
+
+};
+useEffect(() => {
+
+  if (!id) return;
+
+  const fetchNote = async () => {
+
+      try {
+
+          const note = await getNote(id);
+
+          setQuestionNumber(note.questionNumber);
+          setQuestionName(note.questionName);
+
+          setDescription(note.description);
+
+          setPersonalNotes(note.personalNotes);
+
+          setIsStarred(note.isStarred);
+
+          setDifficulty(note.difficulty);
+
+          setRevisionImportance(note.revisionImportance || "Low");
+
+          setSelectedTopics(note.topics);
+
+          setBruteForce(note.bruteForce);
+
+          setOptimal(note.optimal);
+
+          setStatus(note.status);
+
+      } catch (err) {
+
+          console.error(err);
+
+      }
+
+  };
+
+  fetchNote();
+
+}, [id]);
+
 
 
   return (
@@ -223,6 +206,9 @@ const handleSave = () => {
 
             status={status}
             setStatus={setStatus}
+
+            revisionImportance={revisionImportance}
+            setRevisionImportance={setRevisionImportance}
 
             topicSearch={topicSearch}
             setTopicSearch={setTopicSearch}

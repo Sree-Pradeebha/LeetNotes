@@ -255,3 +255,23 @@
     font-size: 0.95rem;
   }
   
+  .revision-tag {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 14px;
+
+    border-radius: 999px;
+
+    border: 1px solid var(--border);
+
+    background: var(--input-bg);
+
+    color: var(--text);
+
+    font-size: var(--font-xs);
+
+    font-weight: var(--fw-semibold);
+
+    letter-spacing: 0.2px;
+}

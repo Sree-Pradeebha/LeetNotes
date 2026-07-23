@@ -1,11 +1,32 @@
+import { useEffect, useState } from "react";
+import { getNotes } from "../api/note";
 import "./Dashboard.css";
 
 function Dashboard() {
 
-    const notes =
-        JSON.parse(
-            localStorage.getItem("notes")
-        ) || [];
+    const [notes, setNotes] = useState([]);
+
+    useEffect(() => {
+
+        const fetchNotes = async () => {
+
+            try {
+
+                const data = await getNotes();
+
+                setNotes(data);
+
+            } catch (err) {
+
+                console.error(err);
+
+            }
+
+        };
+
+        fetchNotes();
+
+    }, []);
 
     const totalQuestions = notes.length;
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getNotes } from "../api/note";
 import "./Notes.css";
 import NoteRow from "../components/NoteRow";
 import { FiFilter } from "react-icons/fi";
@@ -8,71 +9,112 @@ import { FiFilter } from "react-icons/fi";
 function Notes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [revisionFilter, setRevisionFilter] = useState("all");
   const [showStarredOnly, setShowStarredOnly] = useState(false);
   const [sortBy, setSortBy] = useState("questionNumber");
   const [showFilters, setShowFilters] = useState(false);
   const [topicFilter, setTopicFilter] = useState("all"); 
-  const notes =
-    JSON.parse(localStorage.getItem("notes")) || [];
+  const [notes, setNotes] = useState([]);
 
-    const allTopics = [
-        ...new Set(
-          notes.flatMap(
-            (note) => note.topics
-          )
-        ),
-      ];
+  const allTopics = [
+      ...new Set(
+        notes.flatMap(
+          (note) => note.topics
+        )
+      ),
+    ];
 
-    const filteredNotes = notes.filter(
-        (note) => {
-      
-          const matchesSearch =
-            note.questionName
-              .toLowerCase()
-              .includes(
-                searchTerm.toLowerCase()
-              );
-      
-          const matchesDifficulty =
-            difficultyFilter === "all" ||
-            note.difficulty ===
-              difficultyFilter;
-      
-          const matchesTopic =
-            topicFilter === "all" ||
-            note.topics.includes(
-              topicFilter
+  const filteredNotes = notes.filter(
+      (note) => {
+    
+        const matchesSearch =
+          note.questionName
+            .toLowerCase()
+            .includes(
+              searchTerm.toLowerCase()
             );
-      
-          const matchesStarred =
-            !showStarredOnly ||
-            note.isStarred;
-      
-          return (
-            matchesSearch &&
-            matchesDifficulty &&
-            matchesTopic &&
-            matchesStarred
+    
+        const matchesDifficulty =
+          difficultyFilter === "all" ||
+          note.difficulty ===
+            difficultyFilter;
+    
+        const matchesTopic =
+          topicFilter === "all" ||
+          note.topics.includes(
+            topicFilter
           );
-        }
-      );
 
-      const sortedNotes = [...filteredNotes].sort(
-        (a, b) => {
-      
-          if (sortBy === "recentlyAdded") {
-            return b.createdAt - a.createdAt;
-          }
-      
-          if (sortBy === "recentlyUpdated") {
-            return b.updatedAt - a.updatedAt;
-          }
-      
-          return Number(a.questionNumber)
-            - Number(b.questionNumber);
-        }
-      );
+        const matchesStatus =
+          statusFilter === "all" ||
+          note.status === statusFilter;
 
+        const matchesRevision =
+          revisionFilter === "all" ||
+          note.revisionImportance ===
+              revisionFilter;
+    
+        const matchesStarred =
+          !showStarredOnly ||
+          note.isStarred;
+    
+        return (
+          matchesSearch &&
+          matchesDifficulty &&
+          matchesStatus &&
+          matchesRevision &&
+          matchesTopic &&
+          matchesStarred
+        );
+      }
+    );
+
+  const sortedNotes = [...filteredNotes].sort(
+    (a, b) => {
+  
+      if (sortBy === "recentlyAdded") {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+  
+      if (sortBy === "recentlyUpdated") {
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      }
+  
+      return Number(a.questionNumber)
+        - Number(b.questionNumber);
+    }
+  );
+
+  
+
+  useEffect(() => {
+
+    const fetchNotes = async () => {
+
+        try {
+
+            const data = await getNotes();
+
+            // Convert MongoDB's _id to id
+            setNotes(
+                data.map(note => ({
+                    ...note,
+                    id: note._id,
+                }))
+            );
+
+        } catch (err) {
+
+            console.error("Failed to fetch notes:", err);
+
+        }
+
+    };
+
+    fetchNotes();
+
+}, []);
   
 
   return (
@@ -142,8 +184,6 @@ function Notes() {
             ))}
             </select>
 
-            <div className="filter-group">
-
             <select
                 value={sortBy}
                 onChange={(e) =>
@@ -165,9 +205,54 @@ function Notes() {
 
             </select>
 
-            </div>
 
+            <select
+              value={statusFilter}
+              onChange={(e) =>
+                  setStatusFilter(e.target.value)
+              }
+            >
 
+              <option value="all">
+                  All Status
+              </option>
+
+              <option value="complete">
+                  Complete
+              </option>
+
+              <option value="incomplete">
+                  Incomplete
+              </option>
+
+            </select>
+
+            <select
+              value={revisionFilter}
+              onChange={(e) =>
+                  setRevisionFilter(e.target.value)
+              }
+            >
+
+              <option value="all">
+                  Revision Importance
+              </option>
+
+              <option value="Low">
+                  Low
+              </option>
+
+              <option value="Medium">
+                  Medium
+              </option>
+
+              <option value="High">
+                  High
+              </option>
+
+            </select>
+
+         
             <label>
             <input
                 type="checkbox"
@@ -181,8 +266,11 @@ function Notes() {
 
             Starred only
             </label>
+        
             {
             (difficultyFilter !== "all" ||
+            statusFilter !== "all" ||
+            revisionFilter !== "all" ||
             topicFilter !== "all" ||
             showStarredOnly ||
             sortBy !== "questionNumber") && (
@@ -191,6 +279,8 @@ function Notes() {
             className="clear-filters-btn"
             onClick={() => {
                 setDifficultyFilter("all");
+                setStatusFilter("all");
+                setRevisionFilter("all"); 
                 setTopicFilter("all");
                 setShowStarredOnly(false);
                 setSortBy("questionNumber");
@@ -209,7 +299,7 @@ function Notes() {
 
       {sortedNotes.map((note) => (
         <NoteRow
-            key={note.id}
+            key={note._id}
             note={note}
         />
       ))}

@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./NoteDetail.css";
+import { getNote, deleteNote } from "../api/note";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -10,38 +12,69 @@ function NoteDetail() {
 const { id } = useParams();
 const navigate = useNavigate();
 
-const notes =
-JSON.parse(localStorage.getItem("notes")) || [];
+const [note, setNote] = useState(null);
+const [loading, setLoading] = useState(true);
 
-const note = notes.find(
-(note) => note.id === id
-);
+useEffect(() => {
 
-const handleDelete = () => {
-const confirmed = window.confirm(
-"Delete this note?"
-);
+  const fetchNote = async () => {
 
+      try {
 
-if (!confirmed) return;
+          const data = await getNote(id);
 
-const updatedNotes = notes.filter(
-  (note) =>
-    note.id !== id
-);
+          data.id = data._id;
 
-localStorage.setItem(
-  "notes",
-  JSON.stringify(updatedNotes)
-);
+          setNote(data);
 
-navigate("/notes");
+      } catch (err) {
 
+          console.error(err);
+
+      } finally {
+
+          setLoading(false);
+
+      }
+
+  };
+
+  fetchNote();
+
+}, [id]);
+
+const handleDelete = async () => {
+
+  const confirmed = window.confirm(
+      "Delete this note?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+
+      await deleteNote(id);
+
+      alert("Note deleted successfully!");
+
+      navigate("/notes");
+
+  } catch (err) {
+
+      console.error(err);
+
+      alert("Failed to delete note.");
+
+  }
 
 };
 
+if (loading) {
+  return <h2>Loading...</h2>;
+}
+
 if (!note) {
-return <h1>Note Not Found</h1>;
+  return <h2>Note Not Found</h2>;
 }
 
 return (
@@ -69,6 +102,16 @@ return (
 
             <span className="difficulty-tag">
             {note.difficulty}
+            </span>
+
+            <span className="revision-tag">
+
+              {note.revisionImportance === "Low" && "○ Low"}
+
+              {note.revisionImportance === "Medium" && "◐ Medium"}
+
+              {note.revisionImportance === "High" && "● High"}
+
             </span>
 
             {note.topics.map((topic) => (
@@ -110,6 +153,14 @@ return (
   
         <p>{note.description}</p>
   
+      </section>
+
+      <section className="note-section">
+
+        <h2>Personal Notes</h2>
+
+        <p>{note.personalNotes || "No personal notes added."}</p>
+
       </section>
   
   

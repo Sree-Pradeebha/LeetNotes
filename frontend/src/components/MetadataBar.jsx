@@ -4,19 +4,22 @@ import "./MetadataBar.css";
 function MetadataBar({
   difficulty,
   setDifficulty,
-
+  
   status,
   setStatus,
-
+  
+  revisionImportance,
+  setRevisionImportance,
+  
   topicSearch,
   setTopicSearch,
   
   selectedTopics,
-
+  
   toggleTopic,
-
+  
   filteredTopics,
-}) {
+  }) {
   return (
     <div className="metadata-bar">
   
@@ -47,22 +50,44 @@ function MetadataBar({
   
   
       {/* Status */}
-  
+
       <select
-        value={status}
-        onChange={(e) =>
-          setStatus(e.target.value)
-        }
+          value={status}
+          onChange={(e) =>
+              setStatus(e.target.value)
+          }
       >
-        <option value="incomplete">
-          Incomplete
-        </option>
-  
-        <option value="complete">
-          Complete
-        </option>
+          <option value="incomplete">
+              Incomplete
+          </option>
+
+          <option value="complete">
+              Complete
+          </option>
       </select>
-  
+
+
+      {/* Revision Importance */}
+
+      <select
+          value={revisionImportance}
+          onChange={(e) =>
+              setRevisionImportance(e.target.value)
+          }
+      >
+          <option value="Low">
+              Low Revision
+          </option>
+
+          <option value="Medium">
+              Medium Revision
+          </option>
+
+          <option value="High">
+              High Revision
+          </option>
+      </select>
+
       <div className="topic-search-wrapper">
       {/* Topics */}
   
